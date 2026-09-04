@@ -21,10 +21,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "finrca_data"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "real_data"))
 
-from auth.models import Permission, Role
+from auth.models import Permission
 from auth.rbac import has_permission
 from auth.passwords import verify_password
-from auth.store import UserStore, UserNotFoundError, UserAlreadyExistsError
+from auth.store import UserStore, UserNotFoundError
 from auth.tokens import create_access_token
 from case_management.investigation import investigate_case
 from case_management.models import CaseStatus, Priority, Severity
@@ -60,22 +60,6 @@ def _get_user_store() -> UserStore:
         os.path.join(os.path.dirname(__file__), "case_management", "cases.db")
     )
     return UserStore(db_path)
-
-
-def _ensure_admin_user() -> None:
-    email = os.environ.get("AUTH_ADMIN_EMAIL", "").strip()
-    password = os.environ.get("AUTH_ADMIN_PASSWORD", "")
-    if not email or not password:
-        return
-    db_path = os.environ.get("CASE_DB_PATH") or os.path.abspath(os.path.join(os.path.dirname(__file__), "case_management", "cases.db"))
-    store = UserStore(db_path)
-    try:
-        store.get_by_email(email)
-    except UserNotFoundError:
-        try:
-            store.create_user(email=email, password=password, display_name=os.environ.get("AUTH_ADMIN_DISPLAY_NAME", "").strip() or "Administrator", role=Role.ADMIN)
-        except UserAlreadyExistsError:
-            pass
 
 
 def _get_case_store() -> CaseStore:
@@ -141,21 +125,23 @@ def _init_theme():
         :root {
             --bg-main: #F8FAFC;
             --bg-soft: #FFFFFF;
-            --text-primary: #1E293B;
+            --navy: #0B1220;
+            --text-primary: #0F172A;
             --text-secondary: #64748B;
             --text-muted: #94a3b8;
             --border-color: #E2E8F0;
             --border-light: #f1f5f9;
             --accent-primary: #2563EB;
+            --primary-dark: #1D4ED8;
             --accent-secondary: #3b82f6;
             --accent-light: #EFF6FF;
             --success: #16A34A;
             --success-light: #ecfdf5;
-            --warning: #D97706;
+            --warning: #F59E0B;
             --warning-light: #fffbeb;
             --danger: #DC2626;
             --danger-light: #fef2f2;
-            --info: #3b82f6;
+            --info: #2563EB;
             --info-light: #eff6ff;
         }
         
@@ -222,8 +208,8 @@ def _init_theme():
         }
         
         .stButton > button[kind="primary"]:hover {
-            background-color: #1d4ed8;
-            border-color: #1d4ed8;
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
         }
         
         .stTextInput > div > div > input,
@@ -293,7 +279,7 @@ def _init_theme():
         }
         
         .stFormSubmitButton > button:hover {
-            background-color: #1d4ed8;
+            background-color: var(--primary-dark);
         }
         
         /* Custom classes */
@@ -422,6 +408,24 @@ def _init_theme():
             border-radius: 50%;
             background-color: var(--success);
         }
+
+        /* Login page — targets Streamlit's own [data-testid="stForm"]
+           node (a real, stable element Streamlit itself renders), never
+           a manually-opened raw <div> spanning widgets. .stApp and the
+           main view container are never given a fixed or viewport-unit
+           width here, so Streamlit keeps control of the page width. */
+        .login-spacer {
+            height: 4rem;
+        }
+        [data-testid="stForm"] {
+            background-color: var(--bg-soft);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+            max-width: 480px;
+            margin: 0 auto;
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -492,15 +496,15 @@ def _extract_amount(record: dict[str, Any]) -> tuple[str, float | None, str]:
 
     for key in amount_keys:
         if key in record and record[key] not in (None, "", "N/A"):
-        		try:
-        			amount = float(record[key])
-        			currency = "INR"
-        			for currency_key in currency_keys:
-        				if currency_key in record and record[currency_key]:
-        					currency = str(record[currency_key]).upper()
-        			return _render_money(amount), amount, currency
-        		except (TypeError, ValueError):
-        			pass
+            try:
+                amount = float(record[key])
+                currency = "INR"
+                for currency_key in currency_keys:
+                    if currency_key in record and record[currency_key]:
+                        currency = str(record[currency_key]).upper()
+                return _render_money(amount), amount, currency
+            except (TypeError, ValueError):
+                pass
 
     for key, val in record.items():
         if isinstance(val, (int, float)):
@@ -591,47 +595,31 @@ def _empty_state_html(message: str) -> None:
 # AUTHENTICATION
 # ============================================================================
 
-_ensure_admin_user()
-
 if "auth_user" not in st.session_state:
-    st.markdown(
-        """
-        <div style="
-            max-width: 520px;
-            margin: 5rem auto 0 auto;
-            padding: 2rem;
-        ">
-        """,
-        unsafe_allow_html=True,
-    )
+    # No raw <div> wraps any widget here — the "card" look is applied
+    # via CSS targeting Streamlit's own stable [data-testid="stForm"]
+    # element, a real DOM node Streamlit itself creates, not a manually
+    # opened/closed HTML tag spanning widgets.
+    st.markdown('<div class="login-spacer"></div>', unsafe_allow_html=True)
+    left, center, right = st.columns([1, 1.3, 1])
+    with center:
+        st.markdown('<div class="header-main">Sign In</div>', unsafe_allow_html=True)
+        st.markdown('<div class="header-sub">AI Finance Controller</div>', unsafe_allow_html=True)
 
-    st.markdown(
-        '<div class="header-main">Sign In</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        '<div class="header-sub">AI Finance Controller</div>',
-        unsafe_allow_html=True,
-    )
+        with st.form("login_form"):
+            email = st.text_input("Email address")
+            password = st.text_input("Password", type="password")
+            submitted = st.form_submit_button(
+                "Sign in", type="primary", use_container_width=True,
+            )
 
-    with st.form("login_form"):
-        email = st.text_input("Email address")
-        password = st.text_input("Password", type="password")
-        submitted = st.form_submit_button(
-            "Sign in",
-            type="primary",
-            use_container_width=True,
-        )
-
-        if submitted:
-            try:
-                user = _login_user(email, password)
-                st.session_state["auth_user"] = user
-                st.rerun()
-            except (UserNotFoundError, ValueError) as exc:
-                st.error(str(exc))
-
-    st.markdown("</div>", unsafe_allow_html=True)
+            if submitted:
+                try:
+                    user = _login_user(email, password)
+                    st.session_state["auth_user"] = user
+                    st.rerun()
+                except (UserNotFoundError, ValueError) as exc:
+                    st.error(str(exc))
 
     st.stop()
 
@@ -957,7 +945,7 @@ elif page == "Reconciliation":
         data_source = st.radio(
             "Data Source",
             ["Upload Dataset", "Demo / Existing Data"],
-            index=0,
+            index=1,
             horizontal=True,
             key="two_way_data_source",
         )
@@ -1042,7 +1030,7 @@ elif page == "Reconciliation":
         data_source = st.radio(
             "Data Source",
             ["Upload Dataset", "Demo / Existing Data"],
-            index=0,
+            index=1,
             horizontal=True,
             key="three_way_data_source",
         )
