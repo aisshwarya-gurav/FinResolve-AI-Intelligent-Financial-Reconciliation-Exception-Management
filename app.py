@@ -21,10 +21,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "finrca_data"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "real_data"))
 
-from auth.models import Permission
+from auth.models import Permission, Role
 from auth.rbac import has_permission
 from auth.passwords import verify_password
-from auth.store import UserStore, UserNotFoundError
+from auth.store import UserStore, UserNotFoundError, UserAlreadyExistsError
 from auth.tokens import create_access_token
 from case_management.investigation import investigate_case
 from case_management.models import CaseStatus, Priority, Severity
@@ -60,6 +60,22 @@ def _get_user_store() -> UserStore:
         os.path.join(os.path.dirname(__file__), "case_management", "cases.db")
     )
     return UserStore(db_path)
+
+
+def _ensure_admin_user() -> None:
+    email = os.environ.get("AUTH_ADMIN_EMAIL", "").strip()
+    password = os.environ.get("AUTH_ADMIN_PASSWORD", "")
+    if not email or not password:
+        return
+    db_path = os.environ.get("CASE_DB_PATH") or os.path.abspath(os.path.join(os.path.dirname(__file__), "case_management", "cases.db"))
+    store = UserStore(db_path)
+    try:
+        store.get_by_email(email)
+    except UserNotFoundError:
+        try:
+            store.create_user(email=email, password=password, display_name=os.environ.get("AUTH_ADMIN_DISPLAY_NAME", "").strip() or "Administrator", role=Role.ADMIN)
+        except UserAlreadyExistsError:
+            pass
 
 
 def _get_case_store() -> CaseStore:
@@ -574,6 +590,8 @@ def _empty_state_html(message: str) -> None:
 # ============================================================================
 # AUTHENTICATION
 # ============================================================================
+
+_ensure_admin_user()
 
 if "auth_user" not in st.session_state:
     col1, col2 = st.columns([1, 1])
