@@ -1,0 +1,160 @@
+{
+  "historical_cases_loaded": 14,
+  "summary": {
+    "F05_PAYMENT_WITHOUT_VALID_INVOICE": {
+      "total_queries": 2,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0
+    },
+    "F06_INVOICE_PAID_TWICE": {
+      "total_queries": 2,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0
+    },
+    "F07_PARTIAL_PAYMENT_RESIDUAL_BALANCE": {
+      "total_queries": 2,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0
+    }
+  },
+  "per_query_detail": [
+    {
+      "query_record_id": "PAY_0420181",
+      "true_failure_type": "F05_PAYMENT_WITHOUT_VALID_INVOICE",
+      "top_3_retrieved": [
+        {
+          "case_id": "RCA_000009",
+          "failure_type": "F05_PAYMENT_WITHOUT_VALID_INVOICE",
+          "score": 0.3287
+        },
+        {
+          "case_id": "RCA_000010",
+          "failure_type": "F05_PAYMENT_WITHOUT_VALID_INVOICE",
+          "score": 0.3287
+        },
+        {
+          "case_id": "RCA_000011",
+          "failure_type": "F06_INVOICE_PAID_TWICE",
+          "score": 0.1954
+        }
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    },
+    {
+      "query_record_id": "PAY_0420182",
+      "true_failure_type": "F05_PAYMENT_WITHOUT_VALID_INVOICE",
+      "top_3_retrieved": [
+        {
+          "case_id": "RCA_000009",
+          "failure_type": "F05_PAYMENT_WITHOUT_VALID_INVOICE",
+          "score": 0.3287
+        },
+        {
+          "case_id": "RCA_000010",
+          "failure_type": "F05_PAYMENT_WITHOUT_VALID_INVOICE",
+          "score": 0.3287
+        },
+        {
+          "case_id": "RCA_000011",
+          "failure_type": "F06_INVOICE_PAID_TWICE",
+          "score": 0.1954
+        }
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    },
+    {
+      "query_record_id": "INV_0420192",
+      "true_failure_type": "F06_INVOICE_PAID_TWICE",
+      "top_3_retrieved": [
+        {
+          "case_id": "RCA_000012",
+          "failure_type": "F06_INVOICE_PAID_TWICE",
+          "score": 0.4493
+        },
+        {
+          "case_id": "RCA_000011",
+          "failure_type": "F06_INVOICE_PAID_TWICE",
+          "score": 0.4493
+        },
+        {
+          "case_id": "RCA_000014",
+          "failure_type": "F07_PARTIAL_PAYMENT_RESIDUAL_BALANCE",
+          "score": 0.1135
+        }
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    },
+    {
+      "query_record_id": "INV_0420208",
+      "true_failure_type": "F06_INVOICE_PAID_TWICE",
+      "top_3_retrieved": [
+        {
+          "case_id": "RCA_000012",
+          "failure_type": "F06_INVOICE_PAID_TWICE",
+          "score": 0.4493
+        },
+        {
+          "case_id": "RCA_000011",
+          "failure_type": "F06_INVOICE_PAID_TWICE",
+          "score": 0.4493
+        },
+        {
+          "case_id": "RCA_000014",
+          "failure_type": "F07_PARTIAL_PAYMENT_RESIDUAL_BALANCE",
+          "score": 0.1135
+        }
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    },
+    {
+      "query_record_id": "INV_0420031",
+      "true_failure_type": "F07_PARTIAL_PAYMENT_RESIDUAL_BALANCE",
+      "top_3_retrieved": [
+        {
+          "case_id": "RCA_000014",
+          "failure_type": "F07_PARTIAL_PAYMENT_RESIDUAL_BALANCE",
+          "score": 0.2881
+        },
+        {
+          "case_id": "RCA_000013",
+          "failure_type": "F07_PARTIAL_PAYMENT_RESIDUAL_BALANCE",
+          "score": 0.2881
+        },
+        {
+          "case_id": "RCA_000024",
+          "failure_type": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+          "score": 0.0573
+        }
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    },
+    {
+      "query_record_id": "INV_0420073",
+      "true_failure_type": "F07_PARTIAL_PAYMENT_RESIDUAL_BALANCE",
+      "top_3_retrieved": [
+        {
+          "case_id": "RCA_000014",
+          "failure_type": "F07_PARTIAL_PAYMENT_RESIDUAL_BALANCE",
+          "score": 0.2881
+        },
+        {
+          "case_id": "RCA_000013",
+          "failure_type": "F07_PARTIAL_PAYMENT_RESIDUAL_BALANCE",
+          "score": 0.2881
+        },
+        {
+          "case_id": "RCA_000024",
+          "failure_type": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+          "score": 0.0573
+        }
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true
+    }
+  ]
+}

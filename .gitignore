@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+data/audit_log.jsonl
+data/latest_report.json
+.venv/
+venv/
+case_management/cases.db
