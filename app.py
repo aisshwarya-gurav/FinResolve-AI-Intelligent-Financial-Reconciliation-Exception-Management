@@ -594,26 +594,44 @@ def _empty_state_html(message: str) -> None:
 _ensure_admin_user()
 
 if "auth_user" not in st.session_state:
-    col1, col2 = st.columns([1, 1])
-    with col2:
-        st.markdown('<div class="header-main">Sign In</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="header-sub">AI Finance Controller</div>',
-            unsafe_allow_html=True,
+    st.markdown(
+        """
+        <div style="
+            max-width: 520px;
+            margin: 5rem auto 0 auto;
+            padding: 2rem;
+        ">
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div class="header-main">Sign In</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div class="header-sub">AI Finance Controller</div>',
+        unsafe_allow_html=True,
+    )
+
+    with st.form("login_form"):
+        email = st.text_input("Email address")
+        password = st.text_input("Password", type="password")
+        submitted = st.form_submit_button(
+            "Sign in",
+            type="primary",
+            use_container_width=True,
         )
 
-        with st.form("login_form"):
-            email = st.text_input("Email address")
-            password = st.text_input("Password", type="password")
-            submitted = st.form_submit_button("Sign in")
+        if submitted:
+            try:
+                user = _login_user(email, password)
+                st.session_state["auth_user"] = user
+                st.rerun()
+            except (UserNotFoundError, ValueError) as exc:
+                st.error(str(exc))
 
-            if submitted:
-                try:
-                    user = _login_user(email, password)
-                    st.session_state["auth_user"] = user
-                    st.rerun()
-                except (UserNotFoundError, ValueError) as exc:
-                    st.error(str(exc))
+    st.markdown("</div>", unsafe_allow_html=True)
 
     st.stop()
 
