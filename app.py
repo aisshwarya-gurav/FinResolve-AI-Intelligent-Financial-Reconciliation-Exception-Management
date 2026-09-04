@@ -921,7 +921,7 @@ elif page == "Reconciliation":
         data_source = st.radio(
             "Data Source",
             ["Upload Dataset", "Demo / Existing Data"],
-            index=1,
+            index=0,
             horizontal=True,
             key="two_way_data_source",
         )
@@ -962,7 +962,7 @@ elif page == "Reconciliation":
 
             if st.button("Run Reconciliation", type="primary", use_container_width=True):
                 with st.spinner("Running reconciliation pipeline..."):
-                    adapter = RazorpayAdapter()
+                    adapter = RazorpayAdapter(mock_mode=True)
                     pipeline_result = run_razorpay_reconciliation(
                         adapter=adapter,
                         source_type=source_type,
@@ -1006,7 +1006,7 @@ elif page == "Reconciliation":
         data_source = st.radio(
             "Data Source",
             ["Upload Dataset", "Demo / Existing Data"],
-            index=1,
+            index=0,
             horizontal=True,
             key="three_way_data_source",
         )
@@ -1841,7 +1841,7 @@ elif page == "Razorpay":
     st.markdown("Payment gateway integration and reconciliation status.")
     st.markdown("---")
 
-    adapter = RazorpayAdapter()
+    adapter = RazorpayAdapter(mock_mode=True)
     key_id = os.environ.get("RAZORPAY_KEY_ID")
     secret = os.environ.get("RAZORPAY_WEBHOOK_SECRET")
     status = "Connected" if key_id else ("Mock" if adapter.mock_mode else "Not configured")
@@ -1934,7 +1934,7 @@ else:  # page == "System Health"
     except Exception:
         db_ok = False
 
-    adapter = RazorpayAdapter()
+    adapter = RazorpayAdapter(mock_mode=True)
     rag_ok = False
     try:
         rag_ok = isinstance(retrieve_similar({"case_id": "health_check"}, k=1), list)
