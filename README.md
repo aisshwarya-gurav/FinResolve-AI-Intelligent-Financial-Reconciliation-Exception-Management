@@ -58,21 +58,3 @@ python data/generate_data.py   # generates synthetic ledger + bank CSVs
 python main.py                  # runs the full pipeline
 ```
 
-## Output
-
-- `data/latest_report.json` — final report with match rate and exception list
-- `data/audit_log.jsonl` — full audit trail, one JSON event per line
-
-## Honest metrics (fill in after your first real run)
-
-- Total records processed:
-- Clean match rate:
-- Auto-resolved with verified explanation:
-- Escalated to human review:
-- False positives observed (if any):
-
-## What's next
-
-- Streamlit UI for live demo
-- Expand verifier beyond number-grounding to date/entity grounding
-- Batch-level anomaly circuit breaker (pause on mismatch spikes)
