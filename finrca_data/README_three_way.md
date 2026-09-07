@@ -63,6 +63,4 @@ already-being-fixed edge case.
 python finrca_data/main_three_way.py
 ```
 
-Requires `ANTHROPIC_API_KEY`/`GEMINI_API_KEY`/etc. (see root
-`.env.example`) for the Explainer step; the Matcher and ground-truth
-evaluation run without it.
+
